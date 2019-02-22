@@ -1,0 +1,235 @@
+--- sd-fuse_rk3399-50dba2a64ab6128690407ba40ab190171749e07c/fusing.sh	2018-11-13 11:15:52.000000000 +0800
++++ sd-fuse_rk3399-50dba2a64ab6128690407ba40ab190171749e07c/fusing.sh	2019-02-20 14:54:24.000000000 +0800
+@@ -17,18 +17,11 @@
+ # along with this program; if not, you can access it online at
+ # http://www.gnu.org/licenses/gpl-2.0.html.
+ 
+-# Automatically re-run script under sudo if not root
+-if [ $(id -u) -ne 0 ]; then
+-	echo "Re-running script under sudo..."
+-	sudo "$0" "$@"
+-	exit
+-fi
+-
+ # ----------------------------------------------------------
+ # Checking device for fusing
+ 
+ if [ -z $1 ]; then
+-	echo "Usage: $0 DEVICE [friendlycore-arm64|friendlydesktop-arm64|lubuntu]"
++	echo "Usage: $0 DEVICE [buildroot|friendlycore-arm64|friendlydesktop-arm64|lubuntu]"
+ 	exit 0
+ fi
+ 
+@@ -67,48 +60,14 @@ if [ ${DEV_SIZE} -gt 64000000 ]; then
+ 	exit 1
+ fi
+ 
+-if [ ${DEV_SIZE} -le 3800000 ]; then
+-	echo "Error: $1 size (${DEV_SIZE} KB) is too small"
+-	echo "       At least 4GB SDHC card is required, please try another card."
+-	exit 1
+-fi
+-
+ # ----------------------------------------------------------
+ # Get target OS
+ 
+-true ${TARGET_OS:=${2,,}}
+-
+-RKPARAM=./${TARGET_OS}/parameter.txt
+-
+-case ${2,,} in
+-friendlycore* | friendlydesktop* | lubuntu*)
+-	;;
+-eflasher*)
+-	[ -f ./${TARGET_OS}/idbloader.img ] && touch ${RKPARAM} ;;
+-*)
+-	echo "Error: Unsupported target OS: ${TARGET_OS}"
+-	exit -1;;
+-esac
++RKPARAM=$(dirname $0)/buildroot/parameter.txt
+ 
+-if [ ! -f ${RKPARAM} ]; then
+-	echo -n "Warn: Image not found for ${TARGET_OS^}, download now (Y/N)? "
+-
+-	while read -r -n 1 -t 10 -s USER_REPLY; do
+-		if [[ ${USER_REPLY} = [Nn] ]]; then
+-			echo ${USER_REPLY}
+-			exit 1
+-		elif [[ ${USER_REPLY} = [Yy] ]]; then
+-			echo ${USER_REPLY}
+-			break;
+-		fi
+-	done
+-
+-	if [ -z ${USER_REPLY} ]; then
+-		echo "Cancelled."
+-		exit 1
+-	fi
+-
+-	./tools/get_rom.sh ${TARGET_OS} || exit 1
++if [ ! -f ${RKPARAM} ] && [ -f ./buildroot/idbloader.img ]; then
++	echo -n "ERROR: Image not found"
++	exit 1
+ fi
+ 
+ # ----------------------------------------------------------
+@@ -120,7 +79,7 @@ fi
+ # ----------------------------------------------------------
+ # Fusing idbloader, bootloader, trust to card
+ 
+-true ${BOOT_DIR:=./prebuilt}
++true ${BOOT_DIR:=$(dirname $0)/prebuilt}
+ 
+ function fusing_bin() {
+ 	[ -z $2 -o ! -f $1 ] && return 1
+@@ -135,7 +94,7 @@ function fusing_bin() {
+ # umount all at first
+ umount /dev/${DEV_NAME}* > /dev/null 2>&1
+ 
+-if [ ! -f ${TARGET_OS}/idbloader.img -a ! -f ${TARGET_OS}/trust.img ]; then
++if [ ! -f buildroot/idbloader.img -a ! -f buildroot/trust.img ]; then
+ 	fusing_bin ${BOOT_DIR}/idbloader.img  64
+ 	fusing_bin ${BOOT_DIR}/uboot.img      16384
+ 	fusing_bin ${BOOT_DIR}/trust.img      24576
+@@ -151,22 +110,22 @@ fi
+ # ----------------------------------------------------------
+ # partition card & fusing filesystem
+ 
+-true ${SD_UPDATE:=./tools/sd_update}
++true ${SD_UPDATE:=$(dirname $0)/tools/sd_update}
+ 
+ [[ -z $2 && ! -f ${RKPARAM} ]] && exit 0
+ 
+ echo "---------------------------------"
+-echo "${TARGET_OS^} filesystem fusing"
++echo "buildroot filesystem fusing"
+ echo "Image root: `dirname ${RKPARAM}`"
+ echo
+ 
+-PARTMAP=./${TARGET_OS}/partmap.txt
++PARTMAP=$(dirname $0)/buildroot/partmap.txt
+ 
+ if [ ! -f ${PARTMAP} ]; then
+-	if [ -d ${BOOT_DIR}/${TARGET_OS} ]; then
+-		cp ${BOOT_DIR}/${TARGET_OS}/* ./${TARGET_OS}/ -af
++	if [ -d ${BOOT_DIR}/buildroot ]; then
++		cp ${BOOT_DIR}/buildroot/* ./buildroot/ -af
+ 	else
+-		cp ${BOOT_DIR}/generic/* ./${TARGET_OS}/ -af
++		cp ${BOOT_DIR}/generic/* ./buildroot/ -af
+ 	fi
+ fi
+ 
+@@ -184,14 +143,10 @@ if [ $? -ne 0 ]; then
+ 	echo "Warn: Re-read the partition table failed"
+ 
+ else
+-	case ${TARGET_OS} in
+-	friendlycore* | friendlydesktop* | lubuntu*)
+ 		sleep 1
+-		resize2fs -f /dev/${DEV_PART};;
+-	esac
++		resize2fs -f /dev/${DEV_PART}
+ fi
+ 
+ echo "---------------------------------"
+-echo "${TARGET_OS^} is fused successfully."
++echo "buildroot is fused successfully."
+ echo "All done."
+-
+
+--- sd-fuse-rk3399-50dba2a64ab6128690407ba40ab190171749e07c/mkimage.sh
++++ sd-fuse-rk3399-50dba2a64ab6128690407ba40ab190171749e07c/mkimage.sh
+@@ -28,41 +28,18 @@ fi
+ # Get platform, target OS
+ 
+ true ${SOC:=rk3399}
+-true ${TARGET_OS:=${1,,}}
+-
+-case ${TARGET_OS} in
+-friendlycore* | friendlydesktop* | lubuntu* | eflasher*)
+-	;;
+-*)
+-	echo "Error: Unsupported target OS: ${TARGET_OS}"
+-	exit 0
+-esac
+ 
+ # ----------------------------------------------------------
+ # Create zero file
+ 
+ CODENAME=bionic
+ 
+-case ${TARGET_OS} in
+-friendlycore-arm64)
+-	RAW_FILE=${SOC}-sd-friendlycore-${CODENAME}-4.4-arm64-$(date +%Y%m%d).img
+-	RAW_SIZE_MB=7800 ;;
+-friendlydesktop-arm64)
+-	RAW_FILE=${SOC}-sd-friendlydesktop-${CODENAME}-4.4-arm64-$(date +%Y%m%d).img
+-	RAW_SIZE_MB=7800 ;;
+-lubuntu)
+-	RAW_FILE=${SOC}-sd-lubuntu-desktop-xenial-4.4-armhf-$(date +%Y%m%d).img
+-	RAW_SIZE_MB=7800 ;;
+-eflasher)
+-	RAW_FILE=${SOC}-eflasher-$(date +%Y%m%d).img
+-	RAW_SIZE_MB=7800 ;;
+-*)
+-	RAW_FILE=${SOC}-${TARGET_OS}-sd4g-$(date +%Y%m%d).img
+-	RAW_SIZE_MB=3800 ;;
+-esac
++RAW_FILE=$(dirname $0)/../${SOC}-buildroot.img
++ROOTFS_IMG=$(dirname $0)/buildroot/rootfs.img
++RAW_SIZE_MB=$(($(stat -Lc %s $ROOTFS_IMG) / 1024 / 1024 + 96))
+ 
+ BLOCK_SIZE=1024
+-let RAW_SIZE=(${RAW_SIZE_MB}*1000*1000)/${BLOCK_SIZE}
++let RAW_SIZE=(${RAW_SIZE_MB}*1024*1024)/${BLOCK_SIZE}
+ 
+ echo "Creating RAW image: ${RAW_FILE} (${RAW_SIZE_MB} MB)"
+ echo "---------------------------------"
+@@ -103,17 +80,13 @@ fi
+ # ----------------------------------------------------------
+ # Fusing all
+ 
+-true ${SD_FUSING:=./fusing.sh}
++true ${SD_FUSING:=$(dirname $0)/fusing.sh}
+ 
+-${SD_FUSING} ${LOOP_DEVICE} ${TARGET_OS}
++${SD_FUSING} ${LOOP_DEVICE}
+ RET=$?
+ 
+-if [ "x${TARGET_OS}" = "xeflasher" ]; then
+-	mkfs.exfat ${LOOP_DEVICE}p1 -n FriendlyARM
+-fi
+-
+ # cleanup
+-losetup -d ${LOOP_DEVICE}
++sudo losetup -d ${LOOP_DEVICE}
+ 
+ if [ ${RET} -ne 0 ]; then
+ 	echo "Error: ${RAW_FILE}: Fusing image failed, cleanup"
+@@ -124,5 +97,3 @@ fi
+ echo "---------------------------------"
+ echo "RAW image successfully created (`date +%T`)."
+ ls -l ${RAW_FILE}
+-echo "Tip: You can compress it to save disk space."
+-
+
+--- /dev/null
++++ sd-fuse-rk3399-50dba2a64ab6128690407ba40ab190171749e07c/parameter.txt
+@@ -0,0 +1,15 @@
++FIRMWARE_VER: 6.0.1
++MACHINE_MODEL: RK3399
++MACHINE_ID: 007
++MANUFACTURER: RK3399
++MAGIC: 0x5041524B
++ATAG: 0x00200800
++MACHINE: 3399
++CHECK_MASK: 0x80
++PWR_HLD: 0,0,A,0,1
++#KERNEL_IMG: 0x00280000
++#FDT_NAME: rk-kernel.dtb
++#RECOVER_KEY: 1,1,0,20,0
++#in section; per section 512(0x200) bytes
++CMDLINE: root=/dev/mmcblk1p7 rw rootfstype=ext4 consoleblank=0 vt.global_cursor_default=0 mtdparts=rk29xxnand:0x00002000@0x00002000(uboot),0x00002000@0x00004000(trust),0x00002000@0x00006000(misc),0x00006000@0x00008000(resource),0x00010000@0x0000e000(kernel),0x00010000@0x0001e000(boot),-@0x00030000(rootfs)
++
++

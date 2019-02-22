@@ -1,1 +1,0 @@
-flatmax -1 admin -1 =testing /home/flatmax /bin/ash - flatmax user
