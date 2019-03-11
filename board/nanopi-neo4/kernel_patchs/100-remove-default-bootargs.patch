@@ -1,0 +1,13 @@
+--- linux-custom/arch/arm64/boot/dts/rockchip/rk3399-nanopi4-rev04.dts.org	2019-03-11 15:18:55.095638309 +0800
++++ linux-custom/arch/arm64/boot/dts/rockchip/rk3399-nanopi4-rev04.dts	2019-03-11 15:19:35.000000000 +0800
+@@ -22,6 +22,10 @@
+ / {
+ 	model = "FriendlyElec NanoPi NEO4";
+ 	compatible = "friendlyelec,nanopi-neo4", "rockchip,rk3399";
++	
++	chosen {
++		/delete-property/ bootargs;
++	};
+ };
+ 
+ &mach {
