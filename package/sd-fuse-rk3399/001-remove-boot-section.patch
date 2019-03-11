@@ -1,0 +1,9 @@
+--- sd-fuse-rk3399-50dba2a64ab6128690407ba40ab190171749e07c/prebuilt/generic/partmap.txt.org	2019-03-11 09:54:53.587001712 +0800
++++ sd-fuse-rk3399-50dba2a64ab6128690407ba40ab190171749e07c/prebuilt/generic/partmap.txt	2019-03-11 09:56:04.000000000 +0800
+@@ -6,5 +6,5 @@ flash=mmc,1:trust:raw:0xC00000,0x0400000
+ flash=mmc,1:misc:raw:0x1000000,0x0400000;
+ flash=mmc,1:resc:raw:0x1400000,0x0C00000:resource.img;
+ flash=mmc,1:kern:raw:0x2000000,0x2000000:kernel.img;
+-flash=mmc,1:boot:raw:0x4000000,0x2000000:boot.img;
++flash=mmc,1:boot:raw:0x4000000,0x2000000;
+ flash=mmc,1:rootfs:ext4:0x6000000,0x0:rootfs.img;

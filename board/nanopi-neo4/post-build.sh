@@ -11,13 +11,11 @@ cp $UBOOT_BUILD_DIR/rk3399_loader_v1.12.109.bin ${BINARIES_DIR}/sd-fuse-rk3399/b
 # copy over the kernel images
 LINUX_BUILD_DIR=`find ${BUILD_DIR} -type d -name 'linux-custom*'`
 cp $LINUX_BUILD_DIR/resource.img ${BINARIES_DIR}/
-cp $BOARD_DIR/boot.img ${BINARIES_DIR}/
 
 # setup the image creation software
 cp ${BOARD_DIR}/parameter.txt ${BINARIES_DIR}/sd-fuse-rk3399/buildroot
 ln -sf ${BINARIES_DIR}/kernel.img ${BINARIES_DIR}/sd-fuse-rk3399/buildroot
 ln -sf ${BINARIES_DIR}/resource.img ${BINARIES_DIR}/sd-fuse-rk3399/buildroot
-ln -sf ${BINARIES_DIR}/boot.img ${BINARIES_DIR}/sd-fuse-rk3399/buildroot
 ln -sf ${BINARIES_DIR}/uboot.img ${BINARIES_DIR}/sd-fuse-rk3399/buildroot
 ln -sf ${BINARIES_DIR}/trust.img ${BINARIES_DIR}/sd-fuse-rk3399/buildroot
 ln -sf ${BINARIES_DIR}/rootfs.ext2 ${BINARIES_DIR}/sd-fuse-rk3399/buildroot/rootfs.img
