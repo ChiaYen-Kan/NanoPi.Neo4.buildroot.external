@@ -1,10 +1,7 @@
 menu "Packages"
 source "$BR2_EXTERNAL_NEO4_PATH/package/sd-fuse-rk3399/Config.in"
 source "$BR2_EXTERNAL_NEO4_PATH/package/rockchip/Config.in"
-#source "$BR2_EXTERNAL_NEO4_PATH/package/rockchip/bluez-alsa/Config.in"
-
 source "$BR2_EXTERNAL_NEO4_PATH/package/libmali/Config.in"
-source "$BR2_EXTERNAL_NEO4_PATH/package/nanopi_scripts/Config.in"
 endmenu
 
 # menuconfig BR2_PACKAGE_ROCKCHIP

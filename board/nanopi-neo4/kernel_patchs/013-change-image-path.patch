@@ -1,0 +1,11 @@
+--- linux-nanopi4-linux-v4.4.y/arch/arm64/Makefile.org	2019-02-21 12:05:34.169248492 +0800
++++ linux-nanopi4-linux-v4.4.y/arch/arm64/Makefile	2019-02-21 12:06:41.717358171 +0800
+@@ -164,7 +164,7 @@ define archhelp
+ endef
+ 
+ kernel.img: Image.lz4
+-	$(Q)scripts/mkkrnlimg $(objtree)/arch/arm64/boot/Image $(objtree)/kernel.img >/dev/null
++	$(Q)scripts/mkkrnlimg $(objtree)/arch/arm64/boot/Image $(objtree)/arch/arm64/boot/kernel.img >/dev/null
+ 	@echo '  Image:  kernel.img is ready'
+ ifdef CONFIG_MODULES
+ 	$(Q)if [ "$(srctree)" = "$(objtree)" ]; then $(MAKE) modules; fi

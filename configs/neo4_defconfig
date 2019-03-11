@@ -104,19 +104,16 @@ BR2_PACKAGE_LINUX_HEADERS=y
 
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,friendlyarm,kernel-rockchip,nanopi4-linux-v4.4.y)/linux-nanopi4-linux-v4.4.y.tar.gz"
-
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,friendlyarm,kernel-rockchip,decbad503ca983f939baca6c19a79117b11f5bd6)/linux-nanopi4-decbad503ca983f939baca6c19a79117b11f5bd6.tar.gz"
 BR2_LINUX_KERNEL_USE_DEFCONFIG=y
 BR2_LINUX_KERNEL_DEFCONFIG="nanopi4_linux"
-
 BR2_LINUX_KERNEL_IMAGE_TARGET_CUSTOM=y
 BR2_LINUX_KERNEL_IMAGE_TARGET_NAME="nanopi4-images"
 #BR2_LINUX_KERNEL_IMAGE_TARGET_NAME="rk3399-nanopi4-rev04.img"
 BR2_LINUX_KERNEL_IMAGE_NAME="kernel.img"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL)/configs/kernel.fragment"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL)/board/nanopi-neo4/kernel.fragment"
 #BR2_LINUX_KERNEL_LZ4=y
-
-BR2_LINUX_KERNEL_PATCH="/home/chiayen/neo4/rk3399-default"
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL)/board/nanopi-neo4/kernel_patchs"
 #BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 #BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="/home/chiayen/neo4/linux-rk3399-default.config"
 
@@ -128,10 +125,10 @@ BR2_LINUX_KERNEL_PATCH="/home/chiayen/neo4/rk3399-default"
 # wifi
 #BR2_PACKAGE_WPA_SUPPLICANT=y
 
-BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL)/configs/busybox.fragment"
+BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL)/board/nanopi-neo4/busybox.fragment"
 
 # setup options
-BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL)/overlays"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL)/board/nanopi-neo4/fsoverlay"
 
 BR2_PACKAGE_HOST_GENIMAGE=y
 BR2_PACKAGE_HOST_MTOOLS=y
