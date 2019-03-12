@@ -1,0 +1,42 @@
+--- debian_kernel-2.0.8/drivers/video/console/fbcon.c.org	2019-01-08 08:50:34.517513279 +0800
++++ debian_kernel-2.0.8/drivers/video/console/fbcon.c	2019-01-08 08:51:02.145660031 +0800
+@@ -580,6 +580,7 @@ static void fbcon_prepare_logo(struct vc
+ 	if (fb_get_color_depth(&info->var, &info->fix) == 1)
+ 		erase &= ~0x400;
+ 	logo_height = fb_prepare_logo(info, ops->rotate);
++	logo_height += (info->var.yres / 2) - (logo_height / 2);
+ 	logo_lines = DIV_ROUND_UP(logo_height, vc->vc_font.height);
+ 	q = (unsigned short *) (vc->vc_origin +
+ 				vc->vc_size_row * rows);
+--- debian_kernel-2.0.8/drivers/video/fbdev/core/fbmem.c.org	2019-01-08 08:48:21.940795270 +0800
++++ debian_kernel-2.0.8/drivers/video/fbdev/core/fbmem.c	2019-01-08 08:49:46.017253393 +0800
+@@ -488,7 +488,7 @@ static int fb_show_logo_line(struct fb_i
+ 	}
+ 
+ 	if (fb_logo.depth <= 4) {
+-		logo_new = kmalloc(logo->width * logo->height, GFP_KERNEL);
++		logo_new = kmalloc(info->var.xres * info->var.yres, GFP_KERNEL);
+ 		if (logo_new == NULL) {
+ 			kfree(palette);
+ 			if (saved_pseudo_palette)
+@@ -499,8 +499,8 @@ static int fb_show_logo_line(struct fb_i
+ 		fb_set_logo(info, logo, logo_new, fb_logo.depth);
+ 	}
+ 
+-	image.dx = 0;
+-	image.dy = y;
++	image.dx = (info->var.xres - logo->width) / 2;
++	image.dy = (info->var.yres - logo->height) / 2;
+ 	image.width = logo->width;
+ 	image.height = logo->height;
+ 
+@@ -665,8 +665,7 @@ int fb_show_logo(struct fb_info *info, i
+ {
+ 	int y;
+ 
+-	y = fb_show_logo_line(info, rotate, fb_logo.logo, 0,
+-			      num_online_cpus());
++	y = fb_show_logo_line(info, rotate, fb_logo.logo, 0, 1);
+ 	y = fb_show_extra_logos(info, y, rotate);
+ 
+ 	return y;
