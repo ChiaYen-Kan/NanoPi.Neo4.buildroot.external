@@ -1,0 +1,19 @@
+--- linux-custom/arch/arm64/boot/dts/rockchip/rk3399-nanopi4-rev04.dts.org	2019-03-12 11:00:57.874141884 +0800
++++ linux-custom/arch/arm64/boot/dts/rockchip/rk3399-nanopi4-rev04.dts	2019-03-12 11:01:33.000000000 +0800
+@@ -65,3 +65,15 @@
+ &rk_bluetooth {
+ 	status = "okay";
+ };
++
++&edp {
++	status = "disabled";
++};
++
++&cdn_dp {
++	status = "disabled";
++};
++
++&route_edp {
++	status = "disabled";
++};
+\ No newline at end of file
