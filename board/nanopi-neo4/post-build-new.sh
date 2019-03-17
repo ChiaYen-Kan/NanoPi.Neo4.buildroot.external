@@ -11,7 +11,7 @@ cp -rvf ${BOARD_DIR}/extlinux ${BINARIES_DIR}
 
 # create idbloader.img
 $UBOOT_BUILD_DIR/tools/mkimage -n rk3399 -T rksd -d $RKBIN_BUILD_DIR/bin/rk33/rk3399_ddr_933MHz_v1.19.bin ${BINARIES_DIR}/idbloader.img
-cat $RKBIN_BUILD_DIR/bin/rk33/rk3399_miniloader_v1.18.bin >> ${BINARIES_DIR}/idbloader.img
+cat $RKBIN_BUILD_DIR/bin/rk33/rk3399_miniloader_v1.19.bin >> ${BINARIES_DIR}/idbloader.img
 
 # create uboot.img
 UBOOT_LOAD_ADDR=`sed -n "/CONFIG_SYS_TEXT_BASE=/s/CONFIG_SYS_TEXT_BASE=//p" $UBOOT_BUILD_DIR/include/autoconf.mk|tr -d '\r'`
