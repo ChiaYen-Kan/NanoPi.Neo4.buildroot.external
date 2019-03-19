@@ -1,6 +1,8 @@
 BR2_aarch64=y
 BR2_cortex_a72_a53=y
 
+BR2_OPTIMIZE_FAST=y
+
 # base subset is the basic subset of all rootfs, ramdisk.
 #  - auto resize ext2 fs
 BR2_TARGET_ROOTFS_EXT2_SIZE="256M"
@@ -27,7 +29,7 @@ BR2_PACKAGE_BUSYBOX_SHOW_OTHERS=y
 BR2_TARGET_ROOTFS_EXT2=y
 BR2_TARGET_ROOTFS_EXT2_4=y
 
-# extra base subset is the basic subset of all rootfs, ramdisk. 
+# extra base subset is the basic subset of all rootfs, ramdisk.
 #  - we have to use eudev, because wayland need udev support
 BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV=y
 

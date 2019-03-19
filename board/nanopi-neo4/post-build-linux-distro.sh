@@ -15,7 +15,7 @@ cat $RKBIN_BUILD_DIR/bin/rk33/rk3399_miniloader_v1.19.bin >> ${BINARIES_DIR}/idb
 
 # create uboot.img
 UBOOT_LOAD_ADDR=`sed -n "/CONFIG_SYS_TEXT_BASE=/s/CONFIG_SYS_TEXT_BASE=//p" $UBOOT_BUILD_DIR/include/autoconf.mk|tr -d '\r'`
-$UBOOT_BUILD_DIR/tools/loaderimage --pack --uboot $UBOOT_BUILD_DIR/u-boot.bin ${BINARIES_DIR}/uboot.img ${UBOOT_LOAD_ADDR} 
+$UBOOT_BUILD_DIR/tools/loaderimage --pack --uboot $UBOOT_BUILD_DIR/u-boot.bin ${BINARIES_DIR}/uboot.img ${UBOOT_LOAD_ADDR}
 
 # create trust.img
 pushd $RKBIN_BUILD_DIR
