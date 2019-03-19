@@ -1,0 +1,5 @@
+config BR2_PACKAGE_HOST_ROCKCHIP_RKFLASHTOOL
+	bool "rockchip rkflashtool"
+	help
+	  rockchip rkflashtool
+
