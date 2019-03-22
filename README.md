@@ -10,4 +10,4 @@ Base on original [flatmax/NanoPi.Neo4.buildroot.external](https://github.com/fla
 
 # Todo
 - Switch to u-boot 2017-09
-- Create disk image use the genimage of buildroot(no need root privileges)
+- ~~Create disk image use the genimage of buildroot(no need root privileges)~~

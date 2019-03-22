@@ -81,7 +81,7 @@ BR2_PACKAGE_RKWIFIBT_COMPATIBLE=y
 #  - The rk3399 evb used the ttyS0 by default.
 BR2_PACKAGE_RKWIFIBT_BTUART="ttyS0"
 
-BR2_PACKAGE_SD_FUSE_RK3399=y
+BR2_PACKAGE_IDBLOADER=y
 
 # neo4 specific from here on ...
 
@@ -133,9 +133,10 @@ BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL)/board/nanopi-neo4/fsoverlay"
 
 BR2_PACKAGE_HOST_GENIMAGE=y
 BR2_PACKAGE_HOST_MTOOLS=y
-BR2_ROOTFS_POST_BUILD_SCRIPT=""
 
-BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL)/board/nanopi-neo4/post-build.sh"
+BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL)/board/nanopi-neo4/post-build.sh"
+BR2_ROOTFS_POST_IMAGE_SCRIPT="support/scripts/genimage.sh"
+BR2_ROOTFS_POST_SCRIPT_ARGS="-c $(BR2_EXTERNAL)/board/nanopi-neo4/genimage.cfg"
 
 # external packages
 #BR2_PACKAGE_NTP=y
@@ -147,3 +148,5 @@ BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL)/board/nanopi-neo4/post-build.sh"
 BR2_SYSTEM_DHCP="eth0"
 
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
+
+BR2_PACKAGE_HOST_ROCKCHIP_RKFLASHTOOL=y
